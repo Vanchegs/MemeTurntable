@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+   	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+        <title>{{{ PRODUCT_NAME }}}</title>
+
+    #if CONNECT_WEB_AUDIO_PLUGIN_FILES && CONNECT_WEB_AUDIO_PLUGIN_FILES !== "-" && CONNECT_WEB_AUDIO_PLUGIN_FILES !== " "
+    <!-- Подключены необходимые файлы для работы аудио плагина: https://t.me/ChatKozlovDev -->
+    <script type="text/javascript" src="./howler.min.js"></script>
+    <script type="text/javascript" src="./WebAudio.js"></script>
+    #endif
+    #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+    <!-- Консоль добавлена -->
+    #endif
+    #if LOCK_ASPECT_RATIO_ON_MOBILE && LOCK_ASPECT_RATIO_ON_MOBILE !== "-" && LOCK_ASPECT_RATIO_ON_MOBILE !== " "
+    <!-- Фиксация экрана на телефонах включена -->
+    #endif
+    #if LOCK_ASPECT_RATIO_ON_DESKTOP && LOCK_ASPECT_RATIO_ON_DESKTOP !== "-" && LOCK_ASPECT_RATIO_ON_DESKTOP !== " "
+    <!-- Фиксация экрана на ПК включена -->
+    #endif
+    #if CONFIGURE_SHADOWS && CONFIGURE_SHADOWS !== "-" && CONFIGURE_SHADOWS !== " "
+    <!-- Тени вокруг экрана с игрой включены -->
+    #endif
+    #if CHANGE_BAR_COLOR && CHANGE_BAR_COLOR !== "-" && CHANGE_BAR_COLOR !== " "
+    <!-- Полосы по бокам изменены -->
+    #endif
+    #if CHANGE_LOGO_IMAGE && CHANGE_LOGO_IMAGE !== "-" && CHANGE_LOGO_IMAGE !== " "
+    <!-- Лого во время загрузочного экрана изменено -->
+    #endif
+    #if DISABLE_CONSOLE_LOG && DISABLE_CONSOLE_LOG !== "-" && DISABLE_CONSOLE_LOG !== " "
+    <!-- Отключен спам отладочных сообщений -->
+    #endif
+
+        <style>
+      /* Убираем выделение по нажатию клавиш */
+      canvas:focus {
+        outline: none;
+      }
+            html, body {
+                width: 100%;
+                height: 100%;
+                padding: 0px;
+                margin: 0px;
+
+        /* Отключаем скролл и лонгтап на IOS */
+        overflow: hidden;
+        -webkit-touch-callout:none;
+        -webkit-user-select:none;
+        -khtml-user-select:none;
+        -moz-user-select:none;
+        -ms-user-select:none;
+        user-select:none;
+        -webkit-tap-highlight-color:rgba(0,0,0,0);
+
+        /* Меняем цвет полос */
+      	#if CHANGE_BAR_COLOR && CHANGE_BAR_COLOR !== "-" && CHANGE_BAR_COLOR !== " "
+      	{{{ CHANGE_BAR_COLOR }}}
+      	#else
+     	background-image: url('background.png');
+     	#endif
+
+        /* Центрируем, если привязана картинка или творим магию, чтобы можно было использовать градиент */
+  	background-position-x: 50%;
+  	background-repeat: no-repeat;
+ 	background-size: cover;
+        background-attachment: fixed;
+            }
+      #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+      /* Самодельная консоль */
+      #console {
+        position: relative;
+      }
+      button.console-button {
+    	position: absolute;
+    	bottom: 20px;
+   	right: 20px;
+   	width: 50px;
+   	height: 50px;
+   	background-color: #007bff;
+    	color: #fff;
+   	border: none;
+    	border-radius: 50%;
+    	cursor: pointer;
+        z-index: 11000;
+        font-size: 30px;
+        /* Играемся с прозрачностью */
+        opacity: 85%;
+        /* Добавляем тени */
+        -webkit-box-shadow: 0px 0px 0px 5px rgba(255, 255, 255, 0.6);
+        -moz-box-shadow: 0px 0px 0px 5px rgba(255, 255, 255, 0.6);
+        box-shadow: 0px 0px 0px 5px rgba(255, 255, 255, 0.6);
+      }
+      #console-panel {
+    	position: fixed;
+   	background-color: #262526;
+   	height: 50%;
+        margin: auto;
+    	bottom: 0;
+        left: 0;
+        right: 0; 
+        z-index: 10000;
+        border-radius: 15px 15px 0 0;
+        display: none;
+      }
+      #console-content {
+        max-height: calc(100% - 70px);
+        max-width: 100%;
+        overflow: auto;
+        padding: 15px;
+        margin: 20px; 
+        position: relative;
+        color: white;
+        font-family: sans-serif;
+      }
+      #endif
+            .fullscreen {
+    position: fixed;
+#if OVERLAY_BACKGROUND_COLOR && OVERLAY_BACKGROUND_COLOR !== '-' && OVERLAY_BACKGROUND_COLOR !== ' '
+                background: {{{ OVERLAY_BACKGROUND_COLOR }}};
+#else
+                background: #383838;
+#endif
+                width: 100%;
+                height: 100%;
+                top: 0px;
+                left: 0px;
+
+        #if CONFIGURE_SHADOWS && CONFIGURE_SHADOWS !== "-" && CONFIGURE_SHADOWS !== " "
+        /* Добавляем тени по бокам */
+	-webkit-box-shadow: {{{ CONFIGURE_SHADOWS }}}
+	-moz-box-shadow: {{{ CONFIGURE_SHADOWS }}}
+	box-shadow: {{{ CONFIGURE_SHADOWS }}}
+        #endif
+            }
+            #banner-container {
+                position: absolute;
+                bottom: 0px;
+                width: 100%;
+                height: 90px;
+            }
+            #loading-overlay {
+                font-size: 20px;
+                z-index: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+      #unity-logo {
+        width: 144px;
+        height: 144px;
+
+        /* Меняем изображение лого */
+      	#if CHANGE_LOGO_IMAGE && CHANGE_LOGO_IMAGE !== "-" && CHANGE_LOGO_IMAGE !== " "
+      	{{{ CHANGE_LOGO_IMAGE }}}
+      	#else
+        background: url('logo.png');
+     	#endif
+
+        pointer-events: none;
+
+        background-position: center;
+  	background-repeat: no-repeat;
+ 	background-size: contain;
+        background-attachment: scroll;
+      }
+            #progress-bar {
+                border-radius: 5px;
+                width: 90%;
+                max-width: 250px;
+                height: 20px;
+#if PROGRESS_BAR_BACKGROUND_COLOR && PROGRESS_BAR_BACKGROUND_COLOR !== '-' && PROGRESS_BAR_BACKGROUND_COLOR !== ' '
+                background: {{{ PROGRESS_BAR_BACKGROUND_COLOR }}};
+#else
+                background: #242424;
+#endif
+                padding: 5px;
+            }
+            #progress-bar-fill {
+                border-radius: 3px;
+                width: 0%;
+                height: 100%;
+#if PROGRESS_BAR_FILL_COLOR && PROGRESS_BAR_FILL_COLOR !== '-' && PROGRESS_BAR_FILL_COLOR !== ' '
+                background: {{{ PROGRESS_BAR_FILL_COLOR }}};
+#else
+                background: #FF9A00;
+#endif
+            }
+        </style>
+    </head>
+    <body>
+    #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+    <div class="console">
+      <button id="console-button" class="console-button">▲</button>
+      <div id="console-panel" class="console-panel">
+        <div id="console-content" class="console-content"></div>
+      </div>
+    </div>
+    #endif
+        <canvas id="canvas" class="fullscreen"></canvas>
+        <div id="banner-container" style="display: none"></div>
+        <div id="loading-overlay" class="fullscreen">
+            <div id="unity-logo"></div>
+            <div id="progress-bar"><div id="progress-bar-fill"></div></div>
+        </div>
+        <script src="./instant-games-bridge.js"></script>
+        <script>
+            let canvas = document.getElementById('canvas')
+            let loadingOverlay = document.getElementById('loading-overlay')
+            let progressBarFill = document.getElementById('progress-bar-fill')
+            let bannerContainer = document.getElementById('banner-container')
+
+            const STORAGE_DATA_SEPARATOR = '{bridge_data_separator}'
+            const STORAGE_KEYS_SEPARATOR = '{bridge_keys_separator}'
+            const STORAGE_VALUES_SEPARATOR = '{bridge_values_separator}'
+            
+      // Выключаем появление меню при правом клике мыши
+      document.addEventListener('contextmenu', event => event.preventDefault());
+
+      // Проверяем устройство
+      var isTouchDevice;
+
+      if('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        isTouchDevice = true;
+      } else {
+        isTouchDevice = false;
+      }
+
+      // Определение домена
+      var isEnglish;
+
+      var currentURL = window.location.href;
+      if(currentURL.indexOf(".com") > -1) {
+        isEnglish = true;
+      } else {
+        isEnglish = false;
+      }
+
+      #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+      // Функционал самодельной консоли
+      var consoleButton = document.getElementById("console-button");
+      var consolePanel = document.getElementById("console-panel");
+      var consoleContent = document.getElementById("console-content");
+
+      // Отлавливаем сообщения с настоящей консоли
+      console.log = function() {
+        var logArguments = Array.from(arguments);
+        var logMessage = logArguments.join(' ');
+        writeToConsole("> " + logMessage);
+      };
+
+      console.warn = function() {
+        var warnArguments = Array.from(arguments);
+        var warnMessage = warnArguments.join(' ');
+        writeToConsole("> " + warnMessage, "yellow");
+      };
+
+      console.error = function() {
+        var errorArguments = Array.from(arguments);
+        var errorMessage = errorArguments.join(' ');
+        if(errorMessage.includes("both async and sync fetching of the wasm failed")) {
+          console.help("Чика: Убедитесь, что интернет соедининение в норме");
+        }
+        writeToConsole("> " + errorMessage, "red");
+      };
+
+      window.onerror = function(message, source, lineno, colno, error) {
+        console.error(message);
+        return false;
+      };
+
+      console.help = function(helpMessage) {
+        writeToConsole("> " + helpMessage, "#60b8d8");
+      };
+
+      // Отлавливаем странные смс с Unity
+      function unityShowBanner(msg, type) {
+        if(type === 'error') {
+          console.error(msg);
+          if(msg.includes("Unable to parse")) {
+            console.help("Чика: Скорее всего, вы забыли поставить галочку рядом с Decompression Fallback, который находится в Player Settings (File > Build Settings > Player Settings > Publishing Settings). Не забывайте ставить его, если вы используете Gzip или Brotli. В ином же случае попробуйте убрать сжатие (Compression Format: none) и снять галочку с Decompression Fallback");
+          }
+        } else if(type === "warning") {
+          console.warn(msg);
+        }
+      }
+
+      // Записываем сообщения в самодельную консоль
+      function writeToConsole(text, color) {
+        const newLine = document.createElement('div');
+
+        if(color) {
+          newLine.style.color = color;
+        }
+
+        newLine.textContent = text;
+        consoleContent.appendChild(newLine);
+        consoleContent.scrollTop = consoleContent.scrollHeight;
+      }
+
+      // Функционал кнопки для открытия и закрытия консоли
+      var consoleIsOpen;
+
+      consoleButton.addEventListener("click", function () {
+        if(consoleIsOpen) {
+          consolePanel.style.display = "none";
+          consoleButton.innerText ="▲";
+          consoleIsOpen = false;
+          consoleButton.style.opacity = "85%";
+        } else {
+          consolePanel.style.display = "block";
+          consoleIsOpen = true;
+          consoleButton.innerText ="▼";
+          consoleButton.style.opacity = "50%";
+        }
+      });
+      #endif
+
+      #if DISABLE_CONSOLE_LOG && DISABLE_CONSOLE_LOG !== "-" && DISABLE_CONSOLE_LOG !== " "
+      // Отключаем спам отладочных сообщений в консоль
+      console.log = function(){};
+      #endif
+
+      // Фиксируем экран с игрой
+      function updateAspectRatio() {
+        var windowWidth = window.innerWidth;
+        var windowHeight = window.innerHeight;
+        var containerAspectRatio = {{{ WIDTH }}} / {{{ HEIGHT }}};
+        
+        if (windowWidth / windowHeight > containerAspectRatio) {
+          canvas.style.width = windowHeight * containerAspectRatio + "px";
+          canvas.style.height = "100vh";
+        } else {
+          canvas.style.width = "100vw";
+          canvas.style.height = windowWidth / containerAspectRatio + "px";
+        }
+
+        // Центрируем
+        canvas.style.margin = "auto";
+        canvas.style.top = "0";
+        canvas.style.left = "0";
+        canvas.style.bottom = "0";
+        canvas.style.right = "0";
+      }
+            
+            // utils
+            window.unityInstance = null
+            let progressBarFillingInterval = null
+
+            function sendMessageToUnity(name, value) {
+                if (window.unityInstance !== null) {
+                    window.unityInstance.SendMessage('Bridge', name, value)
+                }
+            }
+
+            function onUnityLoadingProgressChanged(progress) {
+                if (progress === 0.9) {
+                    completeProgressBarFilling()
+                    return
+                }
+
+                progressBarFill.style.width = `${ progress * 100 }%`
+                if (progress === 1 && progressBarFillingInterval !== null) {
+                    clearInterval(progressBarFillingInterval)
+                    progressBarFillingInterval = null
+                }
+            }
+            
+            function completeProgressBarFilling() {
+                if (progressBarFillingInterval !== null) {
+                    return
+                }
+
+                let currentPercent = 90
+                progressBarFill.style.width = `${ currentPercent }%`
+                progressBarFillingInterval = setInterval(() => {
+                    currentPercent++
+                    if (currentPercent > 100) {
+                        currentPercent = 100
+                    }
+
+                    progressBarFill.style.width = `${ currentPercent }%`
+
+                    if (currentPercent >= 100) {
+                        clearInterval(progressBarFillingInterval)
+                        progressBarFillingInterval = null
+                        return
+                    }
+                }, 100)
+            }
+
+            window.addEventListener('pointerdown', () => {
+                window.focus()
+                canvas.focus()
+            })
+
+
+            let bridgeOptions = {
+                platforms: {
+#if GAME_DISTRIBUTION_GAME_ID && GAME_DISTRIBUTION_GAME_ID !== '-' && GAME_DISTRIBUTION_GAME_ID !== ' '
+                    'game_distribution': {
+                        gameId: '{{{ GAME_DISTRIBUTION_GAME_ID }}}'
+                    }
+#endif
+                }
+            }
+
+            // initialization
+            bridge
+                .initialize(bridgeOptions)
+                .then(() => {
+                    bridge.advertisement.on('banner_state_changed', state => sendMessageToUnity('OnBannerStateChanged', state))
+                    bridge.advertisement.on('interstitial_state_changed', state => sendMessageToUnity('OnInterstitialStateChanged', state))
+                    bridge.advertisement.on('rewarded_state_changed', state => sendMessageToUnity('OnRewardedStateChanged', state))
+                    bridge.game.on('visibility_state_changed', state => sendMessageToUnity('OnVisibilityStateChanged', state))
+
+                    if (bridge.platform.id === bridge.PLATFORM_ID.YANDEX || bridge.platform.id === bridge.PLATFORM_ID.GAME_DISTRIBUTION) {
+                        bridge.advertisement.showInterstitial()
+                    }
+
+                    let unityLoader = document.createElement('script')
+                    unityLoader.src = 'Build/{{{ LOADER_FILENAME }}}'
+
+      // Ловим ошибку с файлом
+      unityLoader.onerror = () => {
+        #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+        console.error("Failed to load resourse: " + 'Build/{{{ LOADER_FILENAME }}}');
+        console.help("Чика: Попробуйте убрать сжатие (Compression Format: none) и снять галочку с Decompression Fallback в Player Settings (File > Build Settings > Player Settings > Publishing Settings). Всегда делайте билд в папку с англ.названием. А еще убедитесь в том, что в консоли движка нет ошибок");
+        #endif
+      };
+
+                    unityLoader.onload = () => {
+                        createUnityInstance(
+                            canvas,
+                            {
+                                dataUrl: 'Build/{{{ DATA_FILENAME }}}',
+                                frameworkUrl: 'Build/{{{ FRAMEWORK_FILENAME }}}',
+                                codeUrl: 'Build/{{{ CODE_FILENAME }}}',
+#if MEMORY_FILENAME
+                                memoryUrl: 'Build/{{{ MEMORY_FILENAME }}}',
+#endif
+#if SYMBOLS_FILENAME
+                                symbolsUrl: 'Build/{{{ SYMBOLS_FILENAME }}}',
+#endif
+                                streamingAssetsUrl: 'StreamingAssets',
+                                companyName: '{{{ COMPANY_NAME }}}',
+                                productName: '{{{ PRODUCT_NAME }}}',
+                                productVersion: '{{{ PRODUCT_VERSION }}}',
+                                // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+                                // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+        #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+        showBanner: unityShowBanner,
+        #endif
+                            },
+                            onUnityLoadingProgressChanged)
+                            .then((unityInstance) => {
+                                window.unityInstance = unityInstance
+                                loadingOverlay.remove()
+                                canvas.focus()
+          canvas.style.backgroundImage = "none";
+
+          // Недобросовестная реклама
+          if(isEnglish) {
+            #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+            writeToConsole("> " + "Ad: The game uses a free version of advanced templates for Unity. Our group: https://t.me/chikadev. To support us and explore the templates, please visit: https://boosty.to/chikadev. Enjoy your game! Best regards, Chika", "orange");
+            #else
+            console.log("%cAd: The game uses a free version of advanced templates for Unity. Our group: https://t.me/chikadev. To support us and explore the templates, please visit: https://boosty.to/chikadev. Enjoy your game! Best regards, Chika", "background: orange; color: white; padding: 2px 4px; border-radius: 2px; font-family: sans-serif;");
+            #endif
+          } else {
+            #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+            writeToConsole("> " + "Реклама: Игра использует бесплатную версию расширенных шаблонов для Unity. Наша группа: https://t.me/chikadev. Поддержать и ознакомиться с шаблонами можно здесь: https://boosty.to/chikadev. Приятной игры! С уважением, Чика", "orange");
+            #else
+            console.log("%cРеклама: Игра использует бесплатную версию расширенных шаблонов для Unity. Наша группа: https://t.me/chikadev. Поддержать и ознакомиться с шаблонами можно здесь: https://boosty.to/chikadev. Приятной игры! С уважением, Чика", "background: orange; color: white; padding: 2px 4px; border-radius: 2px; font-family: sans-serif;");
+            #endif
+          }
+
+          // Проверяем устройство и фиксируем экран, если включено
+          if(isTouchDevice) {
+            #if LOCK_ASPECT_RATIO_ON_MOBILE && LOCK_ASPECT_RATIO_ON_MOBILE !== "-" && LOCK_ASPECT_RATIO_ON_MOBILE !== " "
+            updateAspectRatio();
+            window.addEventListener("resize", updateAspectRatio);
+            #else
+            // Фиксация экрана на телефонах отключена
+          #endif
+          } else {
+            #if LOCK_ASPECT_RATIO_ON_DESKTOP && LOCK_ASPECT_RATIO_ON_DESKTOP !== "-" && LOCK_ASPECT_RATIO_ON_DESKTOP !== " "
+            updateAspectRatio();
+            window.addEventListener("resize", updateAspectRatio);
+            #else
+            // Фиксация экрана на ПК отключена
+            #endif
+          }
+                            })
+                            .catch((error) => {
+                                console.error(error)
+                            })
+                    }
+                    document.body.appendChild(unityLoader)
+                })
+                .catch(error => console.error(error))
+            
+
+            // platform
+            window.getPlatformId = function() {
+                return bridge.platform.id
+            }
+
+            window.getPlatformLanguage = function() {
+                return bridge.platform.language
+            }
+
+            window.getPlatformPayload = function() {
+                let payload = bridge.platform.payload
+                if (typeof payload === 'string') {
+                    return payload
+                } else {
+                    return ''
+                }
+            }
+
+            window.getPlatformTld = function() {
+                let tld = bridge.platform.tld
+                if (typeof tld === 'string') {
+                    return tld
+                } else {
+                    return ''
+                }
+            }
+
+            window.sendMessageToPlatform = function(message) {
+                bridge.platform.sendMessage(message)
+            }
+
+
+            // device
+            window.getDeviceType = function() {
+                return bridge.device.type
+            }
+
+
+            // player
+            window.getIsPlayerAuthorizationSupported = function() {
+                return bridge.player.isAuthorizationSupported.toString()
+            }
+
+            window.getIsPlayerAuthorized = function() {
+                return bridge.player.isAuthorized.toString()
+            }
+
+            window.getPlayerId = function() {
+                if (bridge.player.id) {
+                    return bridge.player.id.toString()
+                }
+
+                return ''
+            }
+
+            window.getPlayerName = function() {
+                if (bridge.player.name) {
+                    return bridge.player.name.toString()
+                }
+
+                return ''
+            }
+
+            window.getPlayerPhotos = function() {
+                if (bridge.player.photos.length > 0) {
+                    return JSON.stringify(bridge.player.photos)
+                }
+
+                return ''
+            }
+
+            window.authorizePlayer = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                }
+
+                bridge.player.authorize(options)
+                    .then(() => {
+                        sendMessageToUnity('OnAuthorizeCompleted', 'true')
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnAuthorizeCompleted', 'false')
+                    })
+            }
+
+
+            // game
+            window.getVisibilityState = function() {
+                return bridge.game.visibilityState
+            }
+
+
+            // storage
+            window.getStorageDefaultType = function() {
+                return bridge.storage.defaultType
+            }
+
+            window.getIsStorageSupported = function(storageType) {
+                return bridge.storage.isSupported(storageType).toString()
+            }
+
+            window.getIsStorageAvailable = function(storageType) {
+                return bridge.storage.isAvailable(storageType).toString()
+            }
+
+            window.getStorageData = function(key, storageType) {
+                let keys = key.split(STORAGE_KEYS_SEPARATOR)
+
+                bridge.storage.get(keys, storageType)
+                    .then(data => {
+                        if (keys.length > 1) {
+                            let values = []
+
+                            for (let i = 0; i < keys.length; i++) {
+                                let value = data[i]
+                                if (value) {
+                                    if (typeof value !== 'string') {
+                                        value = JSON.stringify(value)
+                                    }
+
+                                    values.push(value)
+                                } else {
+                                    values.push('')
+                                }
+                            }
+
+                            sendMessageToUnity('OnGetStorageDataSuccess', `${key}${STORAGE_DATA_SEPARATOR}${values.join(STORAGE_VALUES_SEPARATOR)}`)
+                        } else {
+                            if (data[0]) {
+                                if (typeof data[0] !== 'string') {
+                                    data = JSON.stringify(data[0])
+                                }
+                            } else {
+                                data = ''
+                            }
+
+                            sendMessageToUnity('OnGetStorageDataSuccess', `${key}${STORAGE_DATA_SEPARATOR}${data}`)
+                        }
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnGetStorageDataFailed', key)
+                    })
+            }
+
+            window.setStorageData = function(key, value, storageType) {
+                let keys = key.split(STORAGE_KEYS_SEPARATOR)
+                let values = value.split(STORAGE_VALUES_SEPARATOR)
+
+                bridge.storage.set(keys, values, storageType)
+                    .then(() => {
+                        sendMessageToUnity('OnSetStorageDataSuccess', key)
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnSetStorageDataFailed', key)
+                    })
+            }
+
+            window.deleteStorageData = function(key, storageType) {
+                let keys = key.split(STORAGE_KEYS_SEPARATOR)
+
+                bridge.storage.delete(keys, storageType)
+                    .then(() => {
+                        sendMessageToUnity('OnDeleteStorageDataSuccess', key)
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnDeleteStorageDataFailed', key)
+                    })
+            }
+
+
+            // advertisement
+            window.getInterstitialState = function() {
+                if (bridge.advertisement.interstitialState) {
+                    return bridge.advertisement.interstitialState
+                } else {
+                    return ''
+                }
+            }
+
+            window.getIsBannerSupported = function() {
+                return bridge.advertisement.isBannerSupported.toString()
+            }
+            
+            window.getMinimumDelayBetweenInterstitial = function() {
+                return bridge.advertisement.minimumDelayBetweenInterstitial.toString()
+            }
+
+            window.setMinimumDelayBetweenInterstitial = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                } else {
+                    options = { }
+                }
+                
+                bridge.advertisement.setMinimumDelayBetweenInterstitial(options)
+            }
+
+            window.showBanner = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                } else {
+                    options = { }
+                }
+
+                if (bridge.platform.id === bridge.PLATFORM_ID.CRAZY_GAMES || bridge.platform.id === bridge.PLATFORM_ID.GAME_DISTRIBUTION) {
+                    bannerContainer.style.display = 'block'
+                }
+
+                options['crazy_games'] = {
+                    containerId: 'banner-container'
+                }
+
+                options['game_distribution'] = {
+                    containerId: 'banner-container'
+                }
+
+                bridge.advertisement.showBanner(options)
+            }
+
+            window.hideBanner = function() {
+                if (bridge.platform.id === bridge.PLATFORM_ID.CRAZY_GAMES || bridge.platform.id === bridge.PLATFORM_ID.GAME_DISTRIBUTION) {
+                    bannerContainer.style.display = 'none'
+                }
+
+                bridge.advertisement.hideBanner()
+            }
+
+            window.showInterstitial = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                }
+
+                bridge.advertisement.showInterstitial(options)
+            }
+
+            window.showRewarded = function() {
+                bridge.advertisement.showRewarded()
+            }
+
+
+            // social
+            window.getIsShareSupported = function() {
+                return bridge.social.isShareSupported.toString()
+            }
+
+            window.getIsInviteFriendsSupported = function() {
+                return bridge.social.isInviteFriendsSupported.toString()
+            }
+
+            window.getIsJoinCommunitySupported = function() {
+                return bridge.social.isJoinCommunitySupported.toString()
+            }
+
+            window.getIsCreatePostSupported = function() {
+                return bridge.social.isCreatePostSupported.toString()
+            }
+
+            window.getIsAddToHomeScreenSupported = function() {
+                return bridge.social.isAddToHomeScreenSupported.toString()
+            }
+
+            window.getIsAddToFavoritesSupported = function() {
+                return bridge.social.isAddToFavoritesSupported.toString()
+            }
+
+            window.getIsRateSupported = function() {
+                return bridge.social.isRateSupported.toString()
+            }
+
+            window.getIsExternalLinksAllowed = function() {
+                return bridge.social.isExternalLinksAllowed.toString()
+            }
+
+            window.share = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                }
+
+                bridge.social.share(options)
+                    .then(() => {
+                        sendMessageToUnity('OnShareCompleted', 'true')
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnShareCompleted', 'false')
+                    })
+            }
+
+            window.inviteFriends = function() {
+                bridge.social.inviteFriends()
+                    .then(() => {
+                        sendMessageToUnity('OnInviteFriendsCompleted', 'true')
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnInviteFriendsCompleted', 'false')
+                    })
+            }
+
+            window.joinCommunity = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                }
+
+                bridge.social.joinCommunity(options)
+                    .then(() => {
+                        sendMessageToUnity('OnJoinCommunityCompleted', 'true')
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnJoinCommunityCompleted', 'false')
+                    })
+            }
+
+            window.createPost = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                }
+
+                bridge.social.createPost(options)
+                    .then(() => {
+                        sendMessageToUnity('OnCreatePostCompleted', 'true')
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnCreatePostCompleted', 'false')
+                    })
+            }
+
+            window.addToHomeScreen = function() {
+                bridge.social.addToHomeScreen()
+                    .then(() => {
+                        sendMessageToUnity('OnAddToHomeScreenCompleted', 'true')
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnAddToHomeScreenCompleted', 'false')
+                    })
+            }
+
+            window.addToFavorites = function() {
+                bridge.social.addToFavorites()
+                    .then(() => {
+                        sendMessageToUnity('OnAddToFavoritesCompleted', 'true')
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnAddToFavoritesCompleted', 'false')
+                    })
+            }
+
+            window.rate = function() {
+                bridge.social.rate()
+                    .then(() => {
+                        sendMessageToUnity('OnRateCompleted', 'true')
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnRateCompleted', 'false')
+                    })
+            }
+
+
+            // leaderboard
+            window.getIsLeaderboardSupported = function() {
+                return bridge.leaderboard.isSupported.toString()
+            }
+
+            window.getIsLeaderboardNativePopupSupported = function() {
+                return bridge.leaderboard.isNativePopupSupported.toString()
+            }
+
+            window.getIsLeaderboardMultipleBoardsSupported = function() {
+                return bridge.leaderboard.isMultipleBoardsSupported.toString()
+            }
+
+            window.getIsLeaderboardSetScoreSupported = function() {
+                return bridge.leaderboard.isSetScoreSupported.toString()
+            }
+
+            window.getIsLeaderboardGetScoreSupported = function() {
+                return bridge.leaderboard.isGetScoreSupported.toString()
+            }
+
+            window.getIsLeaderboardGetEntriesSupported = function() {
+                return bridge.leaderboard.isGetEntriesSupported.toString()
+            }
+
+            window.leaderboardSetScore = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                }
+
+                bridge.leaderboard.setScore(options)
+                    .then(() => {
+                        sendMessageToUnity('OnLeaderboardSetScoreCompleted', 'true')
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnLeaderboardSetScoreCompleted', 'false')
+                    })
+            }
+
+            window.leaderboardGetScore = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                }
+
+                bridge.leaderboard.getScore(options)
+                    .then(data => {
+                        if (data) {
+                            if (typeof data !== 'string') {
+                                data = JSON.stringify(data)
+                            }
+
+                            sendMessageToUnity('OnLeaderboardGetScoreCompleted', data)
+                        } else {
+                            sendMessageToUnity('OnLeaderboardGetScoreCompleted', '')
+                        }
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnLeaderboardGetScoreCompleted', 'false')
+                    })
+            }
+
+            window.leaderboardGetEntries = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                }
+
+                bridge.leaderboard.getEntries(options)
+                    .then(data => {
+                        if (data) {
+                            if (typeof data !== 'string') {
+                                data = JSON.stringify(data)
+                            }
+
+                            sendMessageToUnity('OnLeaderboardGetEntriesCompletedSuccess', data)
+                        } else {
+                            sendMessageToUnity('OnLeaderboardGetEntriesCompletedSuccess', '')
+                        }
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnLeaderboardGetEntriesCompletedFailed', 'false')
+                    })
+            }
+
+            window.leaderboardShowNativePopup = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                }
+
+                bridge.leaderboard.showNativePopup(options)
+                    .then(() => {
+                        sendMessageToUnity('OnLeaderboardShowNativePopupCompleted', 'true')
+                    })
+                    .catch(error => {
+                        sendMessageToUnity('OnLeaderboardShowNativePopupCompleted', 'false')
+                    })
+            }
+        </script>
+    </body>
+</html>

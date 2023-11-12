@@ -1,0 +1,103 @@
+html {
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+canvas {
+    display: block;
+}
+#unity-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+#unity-canvas {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    /* Меняем цвет загрузочного экрана */
+    #if CHANGE_LOADING_SCREEN_BACKGROUND && CHANGE_LOADING_SCREEN_BACKGROUND !== "-" && CHANGE_LOADING_SCREEN_BACKGROUND !== " "
+    {{{ CHANGE_LOADING_SCREEN_BACKGROUND }}}
+    #else
+    background-image: linear-gradient(#2976fa, #6919c6);
+    #endif
+
+    /* Центрируем, если привязана картинка или творим магию, чтобы можно было использовать градиент */
+    background-position-x: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+
+    #if CONFIGURE_SHADOWS && CONFIGURE_SHADOWS !== "-" && CONFIGURE_SHADOWS !== " "
+    /* Добавляем тени по бокам */
+    -webkit-box-shadow: {{{ CONFIGURE_SHADOWS }}}
+    -moz-box-shadow: {{{ CONFIGURE_SHADOWS }}}
+    box-shadow: {{{ CONFIGURE_SHADOWS }}}
+    #endif
+}
+#loading-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#unity-loading-bar {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#unity-progress-bar-empty {
+    width: 40%;
+    height: 24px;
+    margin: 10px 20px 20px 10px;
+    text-align: left;
+    border: 1px solid white;
+    padding: 2px;
+}
+#unity-progress-bar-full {
+    width: 0%;
+    height: 100%;
+    background: white;
+}
+.light #unity-progress-bar-empty {
+    border-color: black;
+}
+.light #unity-progress-bar-full {
+    background: black;
+}
+
+.spinner,
+.spinner:after {
+  border-radius: 50%;
+  width: 5em;
+  height: 5em;
+}
+.spinner {
+  margin: 10px;
+  font-size: 10px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-right: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-left: 1.1em solid #ffffff;
+  transform: translateZ(0);
+  animation: spinner-spin 1.1s infinite linear;
+}
+@keyframes spinner-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+  <title>{{{ PRODUCT_NAME }}}</title>
+    #if CONNECT_WEB_AUDIO_PLUGIN_FILES && CONNECT_WEB_AUDIO_PLUGIN_FILES !== "-" && CONNECT_WEB_AUDIO_PLUGIN_FILES !== " "
+    <!-- Подключены необходимые файлы для работы аудио плагина: https://t.me/ChatKozlovDev -->
+    <script type="text/javascript" src="./howler.min.js"></script>
+    <script type="text/javascript" src="./WebAudio.js"></script>
+    #endif
+    #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+    <!-- Консоль добавлена -->
+    #endif
+    #if LOCK_ASPECT_RATIO_ON_MOBILE && LOCK_ASPECT_RATIO_ON_MOBILE !== "-" && LOCK_ASPECT_RATIO_ON_MOBILE !== " "
+    <!-- Фиксация экрана на телефонах включена -->
+    #endif
+    #if LOCK_ASPECT_RATIO_ON_DESKTOP && LOCK_ASPECT_RATIO_ON_DESKTOP !== "-" && LOCK_ASPECT_RATIO_ON_DESKTOP !== " "
+    <!-- Фиксация экрана на ПК включена -->
+    #endif
+    #if CONFIGURE_SHADOWS && CONFIGURE_SHADOWS !== "-" && CONFIGURE_SHADOWS !== " "
+    <!-- Тени вокруг экрана с игрой включены -->
+    #endif
+    #if CHANGE_BAR_COLOR && CHANGE_BAR_COLOR !== "-" && CHANGE_BAR_COLOR !== " "
+    <!-- Полосы по бокам изменены -->
+    #endif
+    #if CHANGE_LOGO_IMAGE && CHANGE_LOGO_IMAGE !== "-" && CHANGE_LOGO_IMAGE !== " "
+    <!-- Лого во время загрузочного экрана изменено -->
+    #endif
+    #if DISABLE_CONSOLE_LOG && DISABLE_CONSOLE_LOG !== "-" && DISABLE_CONSOLE_LOG !== " "
+    <!-- Отключен спам отладочных сообщений -->
+    #endif
+  <link rel="stylesheet" href="TemplateData/style.css">
+  <script src="TemplateData/gamepush-unity.js"></script>
+
+    <style>
+      /* Убираем выделение по нажатию клавиш */
+      canvas:focus {
+        outline: none;
+      }
+      html, body {
+        /* Убираем отступы */
+        padding: 0;
+        margin: 0;
+
+        /* Отключаем скролл и лонгтап на IOS */
+        overflow: hidden;
+        -webkit-touch-callout:none;
+        -webkit-user-select:none;
+        -khtml-user-select:none;
+        -moz-user-select:none;
+        -ms-user-select:none;
+        user-select:none;
+        -webkit-tap-highlight-color:rgba(0,0,0,0);
+
+        /* Ставим высоту на 100% */
+        height: 100%;
+
+        /* Меняем цвет полос */
+      	#if CHANGE_BAR_COLOR && CHANGE_BAR_COLOR !== "-" && CHANGE_BAR_COLOR !== " "
+      	{{{ CHANGE_BAR_COLOR }}}
+      	#else
+     	background-image: url('background.png');
+     	#endif
+
+        /* Центрируем, если привязана картинка или творим магию, чтобы можно было использовать градиент */
+  	background-position-x: 50%;
+  	background-repeat: no-repeat;
+ 	background-size: cover;
+        background-attachment: fixed;
+      }
+      #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+      /* Самодельная консоль */
+      #console {
+        position: relative;
+      }
+      button.console-button {
+    	position: absolute;
+    	bottom: 20px;
+   	right: 20px;
+   	width: 50px;
+   	height: 50px;
+   	background-color: #007bff;
+    	color: #fff;
+   	border: none;
+    	border-radius: 50%;
+    	cursor: pointer;
+        z-index: 11000;
+        font-size: 30px;
+        /* Играемся с прозрачностью */
+        opacity: 85%;
+        /* Добавляем тени */
+        -webkit-box-shadow: 0px 0px 0px 5px rgba(255, 255, 255, 0.6);
+        -moz-box-shadow: 0px 0px 0px 5px rgba(255, 255, 255, 0.6);
+        box-shadow: 0px 0px 0px 5px rgba(255, 255, 255, 0.6);
+      }
+      #console-panel {
+    	position: fixed;
+   	background-color: #262526;
+   	height: 50%;
+        margin: auto;
+    	bottom: 0;
+        left: 0;
+        right: 0; 
+        z-index: 10000;
+        border-radius: 15px 15px 0 0;
+        display: none;
+      }
+      #console-content {
+        max-height: calc(100% - 70px);
+        max-width: 100%;
+        overflow: auto;
+        padding: 15px;
+        margin: 20px; 
+        position: relative;
+        color: white;
+        font-family: sans-serif;
+      }
+      #endif
+      #unity-logo {
+        width: 256px;
+        height: 256px;
+
+        /* Меняем изображение лого */
+      	#if CHANGE_LOGO_IMAGE && CHANGE_LOGO_IMAGE !== "-" && CHANGE_LOGO_IMAGE !== " "
+      	{{{ CHANGE_LOGO_IMAGE }}}
+      	#else
+        background: url('logo.png');
+     	#endif
+
+        pointer-events: none;
+
+        background-position: center;
+  	background-repeat: no-repeat;
+ 	background-size: contain;
+        background-attachment: scroll;
+      }
+    </style>
+
+  <script>
+    const projectId = "{{{ PROJECT_ID.replace(/ /g, '') }}}";
+    const publicToken = "{{{ TOKEN.replace(/ /g, '') }}}";
+    const showPreloaderAd = "{{{ SHOW_PRELOADER_AD.replace(/ /g, '') }}}";
+    const overlayBackgroundColor = "{{{ OVERLAY_BACKGROUND_COLOR.replace(/ /g, '') }}}";
+    const progressBarFillColor = "{{{ PROGRESS_BAR_FILL_COLOR.replace(/ /g, '') }}}";
+    const progressBarBackgroundColor = "{{{ PROGRESS_BAR_BACKGROUND_COLOR.replace(/ /g, '') }}}";
+    const progressBarBorderColor = "{{{ PROGRESS_BAR_BORDER_COLOR.replace(/ /g, '') }}}";
+  </script>
+
+  <script>
+    var _unityAwaiter = {};
+    _unityAwaiter.ready = new Promise((resolve, reject) => {
+      _unityAwaiter.done = resolve;
+      _unityAwaiter.abort = reject;
+    });
+
+    var _gpAwaiter = {};
+    _gpAwaiter.ready = new Promise((resolve) => {
+      _gpAwaiter.done = resolve;
+    });
+
+    window.unityInstance = null;
+    window.onGPError = () => _gpAwaiter.done();
+
+    window.onGPInit = async (gp) => {
+      if (showPreloaderAd == "true" || showPreloaderAd == "1") {
+        gp.ads.showPreloader();
+      }
+
+      window.GamePush = new GamePushUnity(gp);
+      gp.player.ready.finally(_gpAwaiter.done);
+
+      await _unityAwaiter.ready;
+      gp.gameStart();
+    };
+  </script>
+
+  <script>
+    ((g, a, m, e) => { let o = () => { let p = document.createElement("script"); p.src = `${a[0]}?projectId=${m}&publicToken=${e}`, p.onerror = () => { a.shift(), a.length > 0 ? (o(), p.remove()) : "onGPError" in g && g.onGPError() }, document.head.appendChild(p) }; o() })(window, ["https://gs.eponesh.com/sdk/gamepush.js", "https://s3.eponesh.com/files/gs/sdk/gamepush.js", "gp-bundle/gamepush.js"], projectId, publicToken);
+  </script>
+
+</head>
+
+<body class="{{{ SPLASH_SCREEN_STYLE.toLowerCase() }}}">
+    #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+    <div class="console">
+      <button id="console-button" class="console-button">▲</button>
+      <div id="console-panel" class="console-panel">
+        <div id="console-content" class="console-content"></div>
+      </div>
+    </div>
+    #endif
+  <div id="unity-container" class="unity-desktop">
+    <canvas id="unity-canvas"></canvas>
+    <div id="loading-cover" style="display:none;">
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty" style="display: none;">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const container = document.querySelector("#unity-container");
+    const canvas = document.querySelector("#unity-canvas");
+    const loadingCover = document.querySelector("#loading-cover");
+    const progressBarEmpty = document.querySelector("#unity-progress-bar-empty");
+    const progressBarFull = document.querySelector("#unity-progress-bar-full");
+    const spinner = document.querySelector('.spinner');
+
+      // Выключаем появление меню при правом клике мыши
+      document.addEventListener('contextmenu', event => event.preventDefault());
+
+      // Проверяем устройство
+      var isTouchDevice;
+
+      if('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        isTouchDevice = true;
+      } else {
+        isTouchDevice = false;
+      }
+
+      // Определение домена
+      var isEnglish;
+
+      var currentURL = window.location.href;
+      if(currentURL.indexOf(".com") > -1) {
+        isEnglish = true;
+      } else {
+        isEnglish = false;
+      }
+
+      #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+      // Функционал самодельной консоли
+      var consoleButton = document.getElementById("console-button");
+      var consolePanel = document.getElementById("console-panel");
+      var consoleContent = document.getElementById("console-content");
+
+      // Отлавливаем сообщения с настоящей консоли
+      console.log = function() {
+        var logArguments = Array.from(arguments);
+        var logMessage = logArguments.join(' ');
+        writeToConsole("> " + logMessage);
+      };
+
+      console.warn = function() {
+        var warnArguments = Array.from(arguments);
+        var warnMessage = warnArguments.join(' ');
+        writeToConsole("> " + warnMessage, "yellow");
+      };
+
+      console.error = function() {
+        var errorArguments = Array.from(arguments);
+        var errorMessage = errorArguments.join(' ');
+        if(errorMessage.includes("both async and sync fetching of the wasm failed")) {
+          console.help("Чика: Убедитесь, что интернет соедининение в норме");
+        }
+        writeToConsole("> " + errorMessage, "red");
+      };
+
+      window.onerror = function(message, source, lineno, colno, error) {
+        console.error(message);
+        return false;
+      };
+
+      console.help = function(helpMessage) {
+        writeToConsole("> " + helpMessage, "#60b8d8");
+      };
+
+      // Отлавливаем странные смс с Unity
+      function unityShowBanner(msg, type) {
+        if(type === 'error') {
+          console.error(msg);
+          if(msg.includes("Unable to parse")) {
+            console.help("Чика: Скорее всего, вы забыли поставить галочку рядом с Decompression Fallback, который находится в Player Settings (File > Build Settings > Player Settings > Publishing Settings). Не забывайте ставить его, если вы используете Gzip или Brotli. В ином же случае попробуйте убрать сжатие (Compression Format: none) и снять галочку с Decompression Fallback");
+          }
+        } else if(type === "warning") {
+          console.warn(msg);
+        }
+      }
+
+      // Записываем сообщения в самодельную консоль
+      function writeToConsole(text, color) {
+        const newLine = document.createElement('div');
+
+        if(color) {
+          newLine.style.color = color;
+        }
+
+        newLine.textContent = text;
+        consoleContent.appendChild(newLine);
+        consoleContent.scrollTop = consoleContent.scrollHeight;
+      }
+
+      // Функционал кнопки для открытия и закрытия консоли
+      var consoleIsOpen;
+
+      consoleButton.addEventListener("click", function () {
+        if(consoleIsOpen) {
+          consolePanel.style.display = "none";
+          consoleButton.innerText ="▲";
+          consoleIsOpen = false;
+          consoleButton.style.opacity = "85%";
+        } else {
+          consolePanel.style.display = "block";
+          consoleIsOpen = true;
+          consoleButton.innerText ="▼";
+          consoleButton.style.opacity = "50%";
+        }
+      });
+      #endif
+
+    const buildUrl = "Build";
+    const loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
+    const config = {
+      dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+      frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+      codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+      #if MEMORY_FILENAME
+        memoryUrl: buildUrl + "/{{{ MEMORY_FILENAME }}}",
+      #endif
+      #if SYMBOLS_FILENAME
+        symbolsUrl: buildUrl + "/{{{ SYMBOLS_FILENAME }}}",
+      #endif
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "{{{ COMPANY_NAME }}}",
+      productName: "{{{ PRODUCT_NAME }}}",
+      productVersion: "{{{ PRODUCT_VERSION }}}",
+        #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+        showBanner: unityShowBanner,
+        #endif
+    };
+
+      #if DISABLE_CONSOLE_LOG && DISABLE_CONSOLE_LOG !== "-" && DISABLE_CONSOLE_LOG !== " "
+      // Отключаем спам отладочных сообщений в консоль
+      console.log = function(){};
+      #endif
+
+      // Фиксируем экран с игрой
+      function updateAspectRatio() {
+        var windowWidth = window.innerWidth;
+        var windowHeight = window.innerHeight;
+        var containerAspectRatio = {{{ WIDTH }}} / {{{ HEIGHT }}};
+        
+        if (windowWidth / windowHeight > containerAspectRatio) {
+          canvas.style.width = windowHeight * containerAspectRatio + "px";
+          canvas.style.height = "100vh";
+        } else {
+          canvas.style.width = "100vw";
+          canvas.style.height = windowWidth / containerAspectRatio + "px";
+        }
+
+        // Центрируем
+        canvas.style.margin = "auto";
+        canvas.style.top = "0";
+        canvas.style.left = "0";
+        canvas.style.bottom = "0";
+        canvas.style.right = "0";
+      }
+
+    if (overlayBackgroundColor !== "-" && overlayBackgroundColor !== " " && overlayBackgroundColor !== "")
+      canvas.style.background = overlayBackgroundColor;
+
+    if (progressBarFillColor !== "-" && progressBarFillColor !== " " && progressBarFillColor !== "")
+      progressBarFull.style.background = progressBarFillColor;
+
+    if (progressBarBackgroundColor !== "-" && progressBarBackgroundColor !== " " && progressBarBackgroundColor !== "")
+      progressBarEmpty.style.background = progressBarBackgroundColor;
+
+    if (progressBarBorderColor !== "-" && progressBarBorderColor !== " " && progressBarBorderColor !== "")
+      progressBarEmpty.style.border.color = progressBarBorderColor;
+
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      container.className = "unity-mobile";
+    }
+
+    #if BACKGROUND_FILENAME
+    canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
+    #endif
+    loadingCover.style.display = "";
+
+    const unityLoader = document.createElement("script");
+    unityLoader.src = loaderUrl;
+      // Ловим ошибку с файлом
+      unityLoader.onerror = () => {
+        #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+        console.error("Failed to load resourse: " + loaderUrl);
+        console.help("Чика: Попробуйте убрать сжатие (Compression Format: none) и снять галочку с Decompression Fallback в Player Settings (File > Build Settings > Player Settings > Publishing Settings). Всегда делайте билд в папку с англ.названием. А еще убедитесь в том, что в консоли движка нет ошибок");
+        #endif
+      };
+    unityLoader.onload = async () => {
+      await _gpAwaiter.ready;
+      createUnityInstance(canvas, config, (progress) => {
+        spinner.style.display = "none";
+        progressBarEmpty.style.display = "";
+        progressBarFull.style.width = `${100 * progress}%`;
+      }).then((unityInstance) => {
+        window.unityInstance = unityInstance;
+        _unityAwaiter.done(unityInstance);
+        loadingCover.style.display = "none";
+        canvas.style.backgroundImage = "none";
+
+          // Недобросовестная реклама
+          if(isEnglish) {
+            #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+            writeToConsole("> " + "Ad: The game uses a free version of advanced templates for Unity. Our group: https://t.me/chikadev. To support us and explore the templates, please visit: https://boosty.to/chikadev. Enjoy your game! Best regards, Chika", "orange");
+            #else
+            console.log("%cAd: The game uses a free version of advanced templates for Unity. Our group: https://t.me/chikadev. To support us and explore the templates, please visit: https://boosty.to/chikadev. Enjoy your game! Best regards, Chika", "background: orange; color: white; padding: 2px 4px; border-radius: 2px; font-family: sans-serif;");
+            #endif
+          } else {
+            #if ENABLE_CONSOLE && ENABLE_CONSOLE !== "-" && ENABLE_CONSOLE !== " "
+            writeToConsole("> " + "Реклама: Игра использует бесплатную версию расширенных шаблонов для Unity. Наша группа: https://t.me/chikadev. Поддержать и ознакомиться с шаблонами можно здесь: https://boosty.to/chikadev. Приятной игры! С уважением, Чика", "orange");
+            #else
+            console.log("%cРеклама: Игра использует бесплатную версию расширенных шаблонов для Unity. Наша группа: https://t.me/chikadev. Поддержать и ознакомиться с шаблонами можно здесь: https://boosty.to/chikadev. Приятной игры! С уважением, Чика", "background: orange; color: white; padding: 2px 4px; border-radius: 2px; font-family: sans-serif;");
+            #endif
+          }
+
+          // Проверяем устройство и фиксируем экран, если включено
+          if(isTouchDevice) {
+            #if LOCK_ASPECT_RATIO_ON_MOBILE && LOCK_ASPECT_RATIO_ON_MOBILE !== "-" && LOCK_ASPECT_RATIO_ON_MOBILE !== " "
+            updateAspectRatio();
+            window.addEventListener("resize", updateAspectRatio);
+            #else
+            // Фиксация экрана на телефонах отключена
+          #endif
+          } else {
+            #if LOCK_ASPECT_RATIO_ON_DESKTOP && LOCK_ASPECT_RATIO_ON_DESKTOP !== "-" && LOCK_ASPECT_RATIO_ON_DESKTOP !== " "
+            updateAspectRatio();
+            window.addEventListener("resize", updateAspectRatio);
+            #else
+            // Фиксация экрана на ПК отключена
+            #endif
+          }
+
+
+      }).catch((message) => {
+        _unityAwaiter.abort(message);
+        console.error(message);
+      });
+    };
+    document.body.appendChild(unityLoader);
+
+    document.addEventListener("pointerdown", () => {
+      container.focus();
+      window.focus();
+      canvas.focus();
+    });
+
+  </script>
+</body>
+
+</html>
