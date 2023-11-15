@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8872553858227262279}
   - component: {fileID: 4048173442494381306}
   m_Layer: 5
-  m_Name: SpoonlaeAudioWidget
+  m_Name: SnoopAudioWidget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,10 +36,10 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 1430, y: 95.50997}
-  m_SizeDelta: {x: 894.15, y: 91.22998}
+  m_AnchorMin: {x: 0.514, y: 0.5567778}
+  m_AnchorMax: {x: 0.97900003, y: 0.64400005}
+  m_AnchoredPosition: {x: -2.5, y: -2.4900208}
+  m_SizeDelta: {x: 1.1499023, y: -2.7700195}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8872553858227262279
 CanvasRenderer:
@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 5034984364899130945}
   - component: {fileID: 2771097731396176313}
   m_Layer: 5
-  m_Name: SpoonlaeIcon
+  m_Name: SnoopIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -112,10 +112,10 @@ RectTransform:
   m_Father: {fileID: 63220692607521021}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 52, y: 0.000020981}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchorMin: {x: 0.021355892, y: 0.13900001}
+  m_AnchorMax: {x: 0.095118634, y: 0.85800004}
+  m_AnchoredPosition: {x: 0, y: 0.000022888184}
+  m_SizeDelta: {x: -1, y: -1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5034984364899130945
 CanvasRenderer:
@@ -145,9 +145,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6c8a1b3488f31774daa913b1e66f30e4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4236969a791f9f343bb5761dc0da75e3, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -189,10 +189,10 @@ RectTransform:
   m_Father: {fileID: 63220692607521021}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -52, y: 0}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchorMin: {x: 0.9081695, y: 0.172}
+  m_AnchorMax: {x: 0.9752881, y: 0.82500005}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6812435796692126131
 CanvasRenderer:
@@ -224,7 +224,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: -2127566849, guid: 5f3c405711fe8434fb3506f96b55f0b6, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -275,7 +275,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7059855079305197659}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: Internal.Scripts.AudioLogic.AudioTurntable, Assembly-CSharp
+        m_MethodName: StartButtonClick
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: SnoopDog
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6758681108116680139
 GameObject:
   m_ObjectHideFlags: 0
@@ -288,7 +300,7 @@ GameObject:
   - component: {fileID: 2435403290064019986}
   - component: {fileID: 8504253292670682395}
   m_Layer: 5
-  m_Name: SpoonlaeText
+  m_Name: SnoopText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -309,10 +321,10 @@ RectTransform:
   m_Father: {fileID: 63220692607521021}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -46}
-  m_SizeDelta: {x: 270.32098, y: 45.490944}
+  m_AnchorMin: {x: 0.3488814, y: 0.24850143}
+  m_AnchorMax: {x: 0.651, y: 0.748}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0.3209839, y: -0.5090561}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2435403290064019986
 CanvasRenderer:
@@ -342,7 +354,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u0421\u043F\u0443\u043D\u043B\u0430\u0435"
+  m_text: "\u0421\u043D\u0443\u043F\u0434\u043E\u0433"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}

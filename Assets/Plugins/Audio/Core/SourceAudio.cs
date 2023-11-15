@@ -92,9 +92,15 @@ namespace Plugins.Audio.Core
             _currentProvider.PlayOneShot(key);
         }
 
-        public void Stop()
+        public void Stop(char c)
         {
             CurrentKey = string.Empty;
+            _currentProvider.Stop();
+        }
+
+        public void Stop(string key)
+        {
+            CurrentKey = key;
             _currentProvider.Stop();
         }
 

@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< Updated upstream:Assets/Internal/Common/AudioMemes/Memes/SnoopDog.mp3.meta
-guid: 714f99a6e17cf1f498e295a899bc2e6c
-=======
-guid: 5aa03a80ec613d34c8e3a2f84fa63a07
->>>>>>> Stashed changes:Assets/Internal/Common/AudioMemes/Memes/JohnCina.mp3.meta
+guid: a323e44f81e23d345a1a5165d7a71044
 AudioImporter:
   externalObjects: {}
   serializedVersion: 6

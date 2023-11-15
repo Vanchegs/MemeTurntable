@@ -18,6 +18,7 @@
 /[Tt]rash/
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/Internal/Common/AudioMemes/Memes
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 crashlytics-build.properties
 **/Library/
@@ -93,5 +94,10 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+<<<<<<< Updated upstream
 *.mp3
 *.meta
+=======
+Assets/Internal/Common/AudioMemes/Memes/JohnCina.mp3
+*.mp3
+>>>>>>> Stashed changes

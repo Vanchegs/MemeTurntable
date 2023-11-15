@@ -34,10 +34,10 @@ RectTransform:
   m_Father: {fileID: 8044111445242064385}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -52, y: 0}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchorMin: {x: 0.9081184, y: 0.171}
+  m_AnchorMax: {x: 0.97540826, y: 0.83000004}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3587209584632182607
 CanvasRenderer:
@@ -69,7 +69,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: -2127566849, guid: 5f3c405711fe8434fb3506f96b55f0b6, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -154,10 +154,10 @@ RectTransform:
   m_Father: {fileID: 8044111445242064385}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 270.32098, y: 45.490944}
+  m_AnchorMin: {x: 0.34876323, y: 0.24788992}
+  m_AnchorMax: {x: 0.65147346, y: 0.76400006}
+  m_AnchoredPosition: {x: 0, y: -0.5}
+  m_SizeDelta: {x: 0.3209839, y: -1.5090561}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5660668749465296110
 CanvasRenderer:
@@ -289,10 +289,10 @@ RectTransform:
   m_Father: {fileID: 8044111445242064385}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 52, y: 0.000020981}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchorMin: {x: 0.021355143, y: 0.13800001}
+  m_AnchorMax: {x: 0.09535514, y: 0.86300004}
+  m_AnchoredPosition: {x: 0, y: 0.000022888184}
+  m_SizeDelta: {x: -1, y: -1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3070660847507906749
 CanvasRenderer:
@@ -324,7 +324,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 652d6ffa0d9974d44a69caee6acdc260, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
