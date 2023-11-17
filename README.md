@@ -1,5 +1,5 @@
 # MemeTurntable
-## Проект "Проигрываетль мемов"
+## Проект ["Проигрываетль мемов"](https://yandex.ru/games/category/new#app=271143)
 
 ![Снимок экрана (525)](https://github.com/Vanchegs/MemeTurntable/assets/115901143/a23c8326-1aba-405f-b498-34455a011cb0)
 
